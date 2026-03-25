@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1300">
+  <title>FITH Inventory — Before vs. After</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 48px 24px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+      max-width: 1300px;
+      width: 100%;
+    }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #C9A84C;
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+    .main-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 46px;
+      font-weight: 600;
+      color: #f0ede6;
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+    }
+    .main-title .gold { color: #C9A84C; }
+    .subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: #4a4a4a;
+      margin-top: 10px;
+      letter-spacing: 0.07em;
+      font-weight: 300;
+      text-transform: uppercase;
+    }
+    .diagram-container {
+      width: 100%;
+      max-width: 1300px;
+      overflow-x: auto;
+      border: 1px solid #1e1e1e;
+      border-radius: 12px;
+    }
+    svg { display: block; }
+    .legend-wrap {
+      margin-top: 28px;
+      display: flex;
+      gap: 0;
+      justify-content: center;
+      max-width: 900px;
+      width: 100%;
+      border: 1px solid #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .legend-section {
+      flex: 1;
+      padding: 16px 24px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .legend-section.left { background: #0f0809; border-right: 1px solid #1e1e1e; }
+    .legend-section.right { background: #0b0b06; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: #666;
+      letter-spacing: 0.04em;
+    }
+    .legend-swatch {
+      width: 28px;
+      height: 16px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .legend-swatch.process-red { background: #1c1010; border: 1.5px solid #7A3535; }
+    .legend-swatch.process-gold { background: #141200; border: 1.5px solid #C9A84C; }
+    .legend-swatch.decision { background: #1c1010; border: 1.5px solid #A04040; border-radius: 2px; transform: rotate(10deg); }
+    .legend-swatch.risk { background: #2a0f0f; border: 1.5px solid #c04040; }
+    .legend-swatch.wait { background: #151515; border: 1.5px solid #444; }
+    .legend-swatch.alert { background: #1e1a06; border: 1.5px solid #C9A84C; box-shadow: 0 0 5px #C9A84C55; }
+    .legend-pill {
+      width: 28px;
+      height: 14px;
+      border-radius: 7px;
+      flex-shrink: 0;
+    }
+    .legend-pill.start-end-left { background: #1e1212; border: 1.5px solid #664040; }
+    .legend-pill.start-end-right { background: #1a1600; border: 1.5px solid #C9A84C; }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div class="eyebrow">FITH Activewear — Internal Operations</div>
+    <h1 class="main-title">Inventory Management: <span class="gold">Before vs. After</span></h1>
+    <p class="subtitle">Manual reactive ordering &nbsp;→&nbsp; Automated proactive replenishment</p>
+  </div>
+  <div class="diagram-container">
+  <svg viewBox="0 0 1300 1210" xmlns="http://www.w3.org/2000/svg" width="1300" height="1210">
+    <defs>
+      <marker id="arrowRed" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+        <polygon points="0 0.5, 8 3.5, 0 6.5" fill="#7A3535"/>
+      </marker>
+      <marker id="arrowGold" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+        <polygon points="0 0.5, 8 3.5, 0 6.5" fill="#C9A84C"/>
+      </marker>
+      <marker id="arrowGray" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+        <polygon points="0 0.5, 8 3.5, 0 6.5" fill="#555"/>
+      </marker>
+      <marker id="arrowGoldSmall" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+        <polygon points="0 0.5, 6 2.5, 0 4.5" fill="#C9A84C"/>
+      </marker>
+      <linearGradient id="leftColBg" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse"
+                      gradientTransform="translate(0,0) scale(635,1)">
+        <stop offset="0%" stop-color="#0a0a0a"/>
+        <stop offset="45%" stop-color="#120808"/>
+        <stop offset="100%" stop-color="#0a0a0a"/>
+      </linearGradient>
+      <linearGradient id="rightColBg" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse"
+                      gradientTransform="translate(645,0) scale(655,1)">
+        <stop offset="0%" stop-color="#0a0a0a"/>
+        <stop offset="45%" stop-color="#0c0c07"/>
+        <stop offset="100%" stop-color="#0a0a0a"/>
+      </linearGradient>
+      <filter id="goldGlow" x="-25%" y="-25%" width="150%" height="150%">
+        <feGaussianBlur stdDeviation="3.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="softRedGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="2.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="subtleGlow" x="-15%" y="-15%" width="130%" height="130%">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- Column backgrounds -->
+    <rect x="0" y="0" width="635" height="1210" fill="#0f0808"/>
+    <rect x="645" y="0" width="655" height="1210" fill="#0b0b07"/>
+    <rect x="0" y="0" width="635" height="1210" fill="url(#leftColBg)" opacity="0.7"/>
+    <rect x="645" y="0" width="655" height="1210" fill="url(#rightColBg)" opacity="0.7"/>
+    <!-- Column header banners -->
+    <rect x="60" y="14" width="335" height="52" rx="8" fill="#1c0909" stroke="#7A3535" stroke-width="1.2"/>
+    <text x="228" y="32" text-anchor="middle" font-family="'DM Mono', monospace" font-size="8.5"
+          fill="#a05050" letter-spacing="0.22em" font-weight="500">BEFORE</text>
+    <text x="228" y="52" text-anchor="middle" font-family="'Cormorant Garamond', serif"
+          font-size="17" font-weight="600" fill="#d0a0a0">Manual Process</text>
+    <rect x="845" y="14" width="400" height="52" rx="8" fill="#141200" stroke="#C9A84C" stroke-width="1.2"
+          filter="url(#subtleGlow)"/>
+    <text x="1045" y="32" text-anchor="middle" font-family="'DM Mono', monospace" font-size="8.5"
+          fill="#C9A84C" letter-spacing="0.22em" font-weight="500">AFTER</text>
+    <text x="1045" y="52" text-anchor="middle" font-family="'Cormorant Garamond', serif"
+          font-size="17" font-weight="600" fill="#e8d490">FITH Inventory Tool — Automated</text>
+    <!-- Divider -->
+    <line x1="640" y1="8" x2="640" y2="1200" stroke="#222" stroke-width="1.5" stroke-dasharray="4,6"/>
+    <circle cx="640" cy="640" r="22" fill="#0d0d0d" stroke="#2e2e2e" stroke-width="1.5"/>
+    <text x="640" y="646" text-anchor="middle" font-family="'Cormorant Garamond', serif"
+          font-size="15" font-weight="700" fill="#444" letter-spacing="0.05em">VS</text>
+    <!-- LEFT SIDE ARROWS -->
+    <line x1="250" y1="129" x2="250" y2="182" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="236" x2="250" y2="282" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="336" x2="250" y2="382" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="436" x2="250" y2="468" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="568" x2="250" y2="622" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <rect x="257" y="579" width="30" height="16" rx="3" fill="#1c0909"/>
+    <text x="272" y="591" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="9" fill="#c87070" letter-spacing="0.08em">YES</text>
+    <path d="M 350,518 L 512,518 L 512,30 L 250,30 L 250,90"
+          stroke="#555" stroke-width="1.6" fill="none" stroke-dasharray="5,3"
+          marker-end="url(#arrowGray)"/>
+    <rect x="353" y="508" width="26" height="16" rx="3" fill="#151515"/>
+    <text x="366" y="520" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="9" fill="#888" letter-spacing="0.08em">NO</text>
+    <text x="524" y="380" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="9" fill="#5a4040" font-style="italic"
+          transform="rotate(-90, 524, 380)">Wait until next week</text>
+    <line x1="250" y1="676" x2="250" y2="727" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="781" x2="250" y2="832" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="886" x2="250" y2="937" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="991" x2="250" y2="1042" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <line x1="250" y1="1096" x2="250" y2="1140" stroke="#7A3535" stroke-width="1.8" marker-end="url(#arrowRed)"/>
+    <!-- LEFT NODES -->
+    <rect x="155" y="91" width="190" height="38" rx="19" fill="#1e1010" stroke="#664040" stroke-width="1.5"/>
+    <text x="250" y="99" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#885555" letter-spacing="0.18em">START</text>
+    <text x="250" y="116" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="12" font-weight="500" fill="#c8a0a0">New week begins</text>
+    <rect x="140" y="184" width="220" height="52" rx="10" fill="#1c1010" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="197" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#a05050" letter-spacing="0.16em">MANUAL</text>
+    <text x="250" y="212" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#d0b0b0">Check Shopify admin</text>
+    <text x="250" y="227" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a08080">for recent orders</text>
+    <rect x="140" y="284" width="220" height="52" rx="10" fill="#1c1010" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="297" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#a05050" letter-spacing="0.16em">MANUAL</text>
+    <text x="250" y="312" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#d0b0b0">Pull inventory levels</text>
+    <text x="250" y="327" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a08080">from Shopify / spreadsheet</text>
+    <rect x="140" y="384" width="220" height="52" rx="10" fill="#1c1010" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="397" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#a05050" letter-spacing="0.16em">MANUAL</text>
+    <text x="250" y="412" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#d0b0b0">Estimate sell-through rate</text>
+    <text x="250" y="427" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a08080">gut feel / Excel</text>
+    <polygon points="250,468 350,518 250,568 150,518" fill="#1e0d0d" stroke="#A04040" stroke-width="1.8"/>
+    <text x="250" y="510" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#c06060" letter-spacing="0.1em">DECISION</text>
+    <text x="250" y="524" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11" font-weight="500" fill="#d0a0a0">Is stock</text>
+    <text x="250" y="538" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11" font-weight="500" fill="#d0a0a0">getting low?</text>
+    <rect x="140" y="624" width="220" height="52" rx="10" fill="#1c1010" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="637" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#a05050" letter-spacing="0.16em">MANUAL</text>
+    <text x="250" y="652" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#d0b0b0">Calculate reorder</text>
+    <text x="250" y="667" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a08080">quantity manually</text>
+    <rect x="140" y="729" width="220" height="52" rx="10" fill="#1c1010" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="742" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#a05050" letter-spacing="0.16em">MANUAL</text>
+    <text x="250" y="757" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#d0b0b0">Email or call</text>
+    <text x="250" y="772" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a08080">3PL warehouse in Texas</text>
+    <rect x="140" y="834" width="220" height="52" rx="10" fill="#161616" stroke="#4a4a4a" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="250" y="847" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#666" letter-spacing="0.16em">WAIT</text>
+    <text x="250" y="862" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#b0b0b0">3PL confirms &amp; updates</text>
+    <text x="250" y="877" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#808080">inventory (days of delay)</text>
+    <rect x="140" y="939" width="220" height="52" rx="10" fill="#1c1010" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="952" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#a05050" letter-spacing="0.16em">MANUAL</text>
+    <text x="250" y="967" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#d0b0b0">Update spreadsheet</text>
+    <text x="250" y="982" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a08080">manually</text>
+    <rect x="140" y="1044" width="220" height="52" rx="10" fill="#2a0f0f" stroke="#c04040" stroke-width="2"
+          filter="url(#softRedGlow)"/>
+    <text x="250" y="1057" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#e06060" letter-spacing="0.16em">RISK</text>
+    <text x="250" y="1072" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e09090">Stockout risk —</text>
+    <text x="250" y="1087" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#c07070">no early warning system</text>
+    <rect x="155" y="1140" width="190" height="36" rx="18" fill="#200d0d" stroke="#7A3535" stroke-width="1.5"/>
+    <text x="250" y="1149" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#885555" letter-spacing="0.18em">END</text>
+    <text x="250" y="1165" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#c08080">Reactive ordering complete</text>
+    <!-- RIGHT SIDE ARROWS -->
+    <line x1="1000" y1="129" x2="1000" y2="182" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="236" x2="1000" y2="280" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="334" x2="1000" y2="378" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="432" x2="1000" y2="476" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="530" x2="1000" y2="574" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="628" x2="1000" y2="672" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="726" x2="1000" y2="770" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="824" x2="1000" y2="868" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="922" x2="1000" y2="966" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <line x1="1000" y1="1020" x2="1000" y2="1080" stroke="#C9A84C" stroke-width="1.8" marker-end="url(#arrowGold)"/>
+    <!-- Cover old wrong-y right nodes -->
+    <rect x="880" y="82" width="240" height="960" fill="#0b0b07"/>
+    <!-- RIGHT NODES (correct positions) -->
+    <!-- N1: TRIGGER pill cy=110 -->
+    <rect x="905" y="91" width="190" height="38" rx="19" fill="#181500" stroke="#C9A84C" stroke-width="1.8"
+          filter="url(#subtleGlow)"/>
+    <text x="1000" y="101" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.14em">TRIGGER</text>
+    <text x="1000" y="117" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e8d490">Shopify webhook fires</text>
+    <!-- N2: INGEST cy=209 -->
+    <rect x="890" y="183" width="220" height="53" rx="10" fill="#141200" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="196" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">AUTO</text>
+    <text x="1000" y="211" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Ingest order data</text>
+    <text x="1000" y="226" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">in real-time</text>
+    <!-- N3: VELOCITY cy=307 -->
+    <rect x="890" y="281" width="220" height="53" rx="10" fill="#141200" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="294" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">AUTO</text>
+    <text x="1000" y="309" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Velocity = units sold</text>
+    <text x="1000" y="324" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">÷ days in stock (not total)</text>
+    <!-- N4: WEIGHTED VELOCITY cy=405 -->
+    <rect x="890" y="379" width="220" height="53" rx="10" fill="#141200" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="392" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">AUTO</text>
+    <text x="1000" y="407" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Weighted velocity</text>
+    <text x="1000" y="422" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">60% / 30% / 10% tiers</text>
+    <!-- N5: SUPPRESSED DEMAND cy=503 -->
+    <rect x="890" y="477" width="220" height="53" rx="10" fill="#141200" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="490" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">AUTO</text>
+    <text x="1000" y="505" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Detect suppressed demand</text>
+    <text x="1000" y="520" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">flag OOS &gt; 7 days in 30d</text>
+    <!-- N6: REORDER POINT cy=601 -->
+    <rect x="890" y="575" width="220" height="53" rx="10" fill="#141200" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="588" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">AUTO</text>
+    <text x="1000" y="603" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Calculate reorder point</text>
+    <text x="1000" y="618" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">(lead time × velocity) + safety</text>
+    <!-- N7: SUGGESTED QTY cy=699 -->
+    <rect x="890" y="673" width="220" height="53" rx="10" fill="#141200" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="686" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">AUTO</text>
+    <text x="1000" y="701" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Generate suggested order qty</text>
+    <text x="1000" y="716" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">(coverage × vel.) − stock − transit</text>
+    <!-- N8: EMAIL ALERT cy=797 -->
+    <rect x="890" y="771" width="220" height="53" rx="10" fill="#201b00" stroke="#C9A84C" stroke-width="2"
+          filter="url(#goldGlow)"/>
+    <text x="1000" y="784" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">ALERT</text>
+    <text x="1000" y="799" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#f0e090">Email alert sent</text>
+    <text x="1000" y="814" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#b0a060">stock at reorder threshold</text>
+    <!-- N9: DASHBOARD cy=895 -->
+    <rect x="890" y="869" width="220" height="53" rx="10" fill="#181600" stroke="#C9A84C" stroke-width="1.5"/>
+    <text x="1000" y="882" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">DASHBOARD</text>
+    <text x="1000" y="897" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Team reviews dashboard</text>
+    <text x="1000" y="912" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#a09060">replenishment recommendations</text>
+    <!-- N10: ACTION cy=993 -->
+    <rect x="890" y="967" width="220" height="53" rx="10" fill="#1c1900" stroke="#C9A84C" stroke-width="2"/>
+    <text x="1000" y="980" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.12em">ACTION</text>
+    <text x="1000" y="995" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#f0e090">Admin approves order</text>
+    <text x="1000" y="1010" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="10.5" font-weight="300" fill="#b0a060">with 1 click</text>
+    <!-- N11: END pill cy=1099 -->
+    <rect x="905" y="1080" width="190" height="38" rx="19" fill="#1c1900" stroke="#C9A84C" stroke-width="1.8"
+          filter="url(#subtleGlow)"/>
+    <text x="1000" y="1090" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="7.5" fill="#C9A84C" letter-spacing="0.14em">END</text>
+    <text x="1000" y="1106" text-anchor="middle" font-family="'DM Sans', sans-serif"
+          font-size="11.5" font-weight="500" fill="#e0d090">Proactive ordering complete</text>
+    <!-- PAIN POINT BADGES (left) -->
+    <rect x="364" y="200" width="115" height="20" rx="4" fill="#2a0f0f" stroke="#8B3535" stroke-width="1"/>
+    <text x="371" y="214" font-family="'DM Mono', monospace" font-size="8.5" fill="#ef8080" letter-spacing="0.04em">&#x26A0; Hours per week</text>
+    <line x1="360" y1="210" x2="364" y2="210" stroke="#8B3535" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="364" y="399" width="92" height="20" rx="4" fill="#2a0f0f" stroke="#8B3535" stroke-width="1"/>
+    <text x="371" y="413" font-family="'DM Mono', monospace" font-size="8.5" fill="#ef8080" letter-spacing="0.04em">&#x26A0; Error-prone</text>
+    <line x1="360" y1="410" x2="364" y2="410" stroke="#8B3535" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="364" y="422" width="123" height="20" rx="4" fill="#2a0f0f" stroke="#8B3535" stroke-width="1"/>
+    <text x="371" y="436" font-family="'DM Mono', monospace" font-size="8.5" fill="#ef8080" letter-spacing="0.04em">&#x26A0; No demand history</text>
+    <line x1="360" y1="432" x2="364" y2="432" stroke="#8B3535" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="364" y="485" width="147" height="20" rx="4" fill="#2a0f0f" stroke="#8B3535" stroke-width="1"/>
+    <text x="371" y="499" font-family="'DM Mono', monospace" font-size="8.5" fill="#ef8080" letter-spacing="0.04em">&#x26A0; No suppressed demand</text>
+    <line x1="360" y1="495" x2="364" y2="495" stroke="#8B3535" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="364" y="1060" width="155" height="20" rx="4" fill="#2a0f0f" stroke="#c04040" stroke-width="1"
+          filter="url(#softRedGlow)"/>
+    <text x="371" y="1074" font-family="'DM Mono', monospace" font-size="8.5" fill="#ff9090" letter-spacing="0.04em">&#x26A0; Missed sales — stockouts</text>
+    <line x1="360" y1="1070" x2="364" y2="1070" stroke="#c04040" stroke-width="1" stroke-dasharray="2,2"/>
+    <!-- BENEFIT BADGES (right) -->
+    <rect x="1115" y="100" width="72" height="20" rx="4" fill="#1c1900" stroke="#C9A84C" stroke-width="1"
+          filter="url(#subtleGlow)"/>
+    <text x="1122" y="114" font-family="'DM Mono', monospace" font-size="8.5" fill="#C9A84C" letter-spacing="0.04em">&#x2726; Real-time</text>
+    <line x1="1110" y1="110" x2="1115" y2="110" stroke="#C9A84C" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="1115" y="395" width="118" height="20" rx="4" fill="#1c1900" stroke="#C9A84C" stroke-width="1"
+          filter="url(#subtleGlow)"/>
+    <text x="1122" y="409" font-family="'DM Mono', monospace" font-size="8.5" fill="#C9A84C" letter-spacing="0.04em">&#x2726; Demand-adjusted</text>
+    <line x1="1110" y1="405" x2="1115" y2="405" stroke="#C9A84C" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="1115" y="493" width="160" height="20" rx="4" fill="#1c1900" stroke="#C9A84C" stroke-width="1"
+          filter="url(#subtleGlow)"/>
+    <text x="1122" y="507" font-family="'DM Mono', monospace" font-size="8" fill="#C9A84C" letter-spacing="0.02em">&#x2726; Suppressed demand detection</text>
+    <line x1="1110" y1="503" x2="1115" y2="503" stroke="#C9A84C" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="1115" y="591" width="130" height="20" rx="4" fill="#1c1900" stroke="#C9A84C" stroke-width="1"
+          filter="url(#subtleGlow)"/>
+    <text x="1122" y="605" font-family="'DM Mono', monospace" font-size="8.5" fill="#C9A84C" letter-spacing="0.04em">&#x2726; Stockout prevention</text>
+    <line x1="1110" y1="601" x2="1115" y2="601" stroke="#C9A84C" stroke-width="1" stroke-dasharray="2,2"/>
+    <rect x="1115" y="983" width="128" height="20" rx="4" fill="#1c1900" stroke="#C9A84C" stroke-width="1"
+          filter="url(#subtleGlow)"/>
+    <text x="1122" y="997" font-family="'DM Mono', monospace" font-size="8.5" fill="#C9A84C" letter-spacing="0.04em">&#x2726; Minutes, not hours</text>
+    <line x1="1110" y1="993" x2="1115" y2="993" stroke="#C9A84C" stroke-width="1" stroke-dasharray="2,2"/>
+    <!-- Footer strip -->
+    <rect x="0" y="1180" width="1300" height="30" fill="#0a0a0a"/>
+    <line x1="0" y1="1180" x2="1300" y2="1180" stroke="#1e1e1e" stroke-width="1"/>
+    <text x="250" y="1198" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="9" fill="#4a3030" letter-spacing="0.12em">REACTIVE — HOURS OF MANUAL WORK — STOCKOUT RISK</text>
+    <text x="1000" y="1198" text-anchor="middle" font-family="'DM Mono', monospace"
+          font-size="9" fill="#4a4020" letter-spacing="0.12em">AUTOMATED — REAL-TIME — PROACTIVE REPLENISHMENT</text>
+    <line x1="640" y1="1180" x2="640" y2="1210" stroke="#222" stroke-width="1.5" stroke-dasharray="4,6"/>
+  </svg>
+  </div>
+  <div class="legend-wrap">
+    <div class="legend-section left">
+      <div class="legend-item">
+        <div class="legend-pill start-end-left"></div>
+        <span>START / END</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch process-red"></div>
+        <span>MANUAL step</span>
+      </div>
+      <div class="legend-item" style="gap:10px">
+        <svg width="28" height="18" viewBox="0 0 28 18">
+          <polygon points="14,2 26,9 14,16 2,9" fill="#1e0d0d" stroke="#A04040" stroke-width="1.5"/>
+        </svg>
+        <span>DECISION</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch wait"></div>
+        <span>WAIT state</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch risk"></div>
+        <span>RISK node</span>
+      </div>
+    </div>
+    <div class="legend-section right">
+      <div class="legend-item">
+        <div class="legend-pill start-end-right"></div>
+        <span>TRIGGER / END</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch process-gold"></div>
+        <span>AUTO step</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch alert"></div>
+        <span>ALERT (glowing)</span>
+      </div>
+      <div class="legend-item" style="align-items:center">
+        <svg width="28" height="10">
+          <line x1="2" y1="5" x2="22" y2="5" stroke="#C9A84C" stroke-width="1.8"/>
+          <polygon points="22,2 28,5 22,8" fill="#C9A84C"/>
+        </svg>
+        <span>Auto flow arrow</span>
+      </div>
+      <div class="legend-item" style="align-items:center">
+        <svg width="28" height="10">
+          <line x1="2" y1="5" x2="22" y2="5" stroke="#555" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <polygon points="22,2 28,5 22,8" fill="#555"/>
+        </svg>
+        <span>Loop / decision arrow</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

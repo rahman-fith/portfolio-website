@@ -1,0 +1,160 @@
+"use client";
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+
+interface MetricCard {
+  value: string;
+  label: string;
+}
+
+interface CaseStudyTemplateProps {
+  tag: string;
+  title: string;
+  tagColor?: string;
+  metrics: MetricCard[];
+}
+
+export default function CaseStudyTemplate({
+  tag,
+  title,
+  tagColor = "text-[#60A5FA] bg-[#60A5FA]/10",
+  metrics,
+}: CaseStudyTemplateProps) {
+  return (
+    <main className="min-h-screen bg-[#FAFAFA]">
+      {/* Back nav */}
+      <div className="px-6 pt-8">
+        <div className="max-w-[1200px] mx-auto">
+          <Link
+            href="/#case-studies"
+            className="inline-flex items-center gap-2 text-sm text-[#666666] hover:text-[#1A1A1A] transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Back to Case Studies
+          </Link>
+        </div>
+      </div>
+
+      {/* Hero */}
+      <section className="py-16 md:py-24 px-6">
+        <div className="max-w-[1200px] mx-auto max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <span
+              className={`text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full ${tagColor}`}
+            >
+              {tag}
+            </span>
+            <h1 className="text-[36px] md:text-[48px] font-bold text-[#1A1A1A] leading-tight tracking-tight mt-5 mb-4">
+              {title}
+            </h1>
+            <div className="w-16 h-1 bg-[#2563EB] rounded-full" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Overview */}
+      <section className="py-12 px-6 border-t border-[#E5E5E5]">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h2 className="text-[22px] font-semibold text-[#1A1A1A] mb-5">Overview</h2>
+            <div className="bg-[#F5F5F5] border border-[#E5E5E5] rounded-xl p-6 text-[#999999] text-sm italic">
+              [PLACEHOLDER: Write 2-3 paragraphs describing the challenge, approach, and context]
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* The Approach */}
+      <section className="py-12 px-6 border-t border-[#E5E5E5]">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
+            <h2 className="text-[22px] font-semibold text-[#1A1A1A] mb-5">The Approach</h2>
+            <div className="bg-[#F5F5F5] border border-[#E5E5E5] rounded-xl p-6 text-[#999999] text-sm italic">
+              [PLACEHOLDER: Write 3-4 paragraphs on strategy and execution]
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Results */}
+      <section className="py-12 px-6 border-t border-[#E5E5E5]">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h2 className="text-[22px] font-semibold text-[#1A1A1A] mb-8">Results</h2>
+
+            {/* Metric cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {metrics.map((m, i) => (
+                <div
+                  key={i}
+                  className="bg-white border border-[#E5E5E5] rounded-2xl p-5 text-center shadow-sm"
+                >
+                  <p className="text-[28px] font-bold text-[#1A1A1A]">{m.value}</p>
+                  <p className="text-xs text-[#999999] mt-1 leading-snug">{m.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-[#F5F5F5] border border-[#E5E5E5] rounded-xl p-6 text-[#999999] text-sm italic">
+              [PLACEHOLDER: Write 1-2 paragraphs summarizing outcomes]
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Key Takeaways */}
+      <section className="py-12 px-6 border-t border-[#E5E5E5]">
+        <div className="max-w-[1200px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+          >
+            <h2 className="text-[22px] font-semibold text-[#1A1A1A] mb-5">Key Takeaways</h2>
+            <div className="flex flex-col gap-3">
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="bg-[#F5F5F5] border border-[#E5E5E5] rounded-xl p-5 text-[#999999] text-sm italic"
+                >
+                  [PLACEHOLDER: Key takeaway {n}]
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Back link */}
+      <section className="py-12 px-6 border-t border-[#E5E5E5]">
+        <div className="max-w-[1200px] mx-auto">
+          <Link
+            href="/#case-studies"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#2563EB] hover:gap-3 transition-all"
+          >
+            <ArrowLeft size={14} />
+            Back to all case studies
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
